@@ -10,7 +10,7 @@
 #
 ###############################################################################
 
-REP_DIR="tkobr-buildout"
+REP_DIR="tko-buildout"
 BUILDOUT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILDOUT_FILE="buildout.cfg"
 LOCK_FILE=${BUILDOUT_DIR%/*}/.tkobr_setup_lock
