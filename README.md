@@ -29,11 +29,11 @@ Follow this steps to build an Odoo installation from scratch:
 ```
 $~> mkdir odoo80
 $~> cd odoo80
-$odoo80> git clone git@github.com:thinkopensolutions/tkobr-buildout.git
+$odoo80> git clone git@github.com:thinkopensolutions/tko-buildout.git
 ```
  * Run bash script from the repository (to install all dependencies):
 ```
-$odoo80> ./tkobr-buildout/setup.sh
+$odoo80> ./tko-buildout/setup.sh
 ```
  * Answer the following script questions (example for localhost):
   * Select base buildout file to extend from list (odoo-80.cfg);
