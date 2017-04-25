@@ -1,40 +1,56 @@
 #!/bin/bash
 
 ###############################################################################
-#
-# Copyright (C) 2012 Thinkopen Solutions, Lda. All Rights Reserved
+# Copyright (C) 2012 Thinkopen Solutions Brasil, Lda. All Rights Reserved
 # http://www.tkobr.com
 # carlos.almeida@tkobr.com
 #
 # This script installs base modules, and performs the bootstrap plus buildout
-#
 ###############################################################################
 
 REP_DIR="tko-buildout"
 BUILDOUT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILDOUT_FILE="buildout.cfg"
 LOCK_FILE=${BUILDOUT_DIR%/*}/.tkobr_setup_lock
+clean=false
+
+usage() {
+    echo "Usage ./tko-buildout/setup.sh [-h] [-c]
+OPTIONS
+ -h This help, with examples
+ -c Deletes all files and directories except buildout.cfg
+    After that it builds everything from zero
+    WARNING: Will delete all non pushed changes made by user!"
+}
+
+while getopts "hc" arg; do
+    case "$arg" in
+        h) usage; exit;;
+        c) clean=true;;
+        -) break ;;
+        \?) ;;
+        *) echo "unhandled option $arg";;
+        ?) usage
+         exit 1 ;;
+    esac
+done
 
 if [ $PWD == $BUILDOUT_DIR ]; then
-    echo "ATTENTION: This script should be executed outside the buildout repository directory."
-    echo "           You must move one directory up and run ./buildout/setup.py"
+    echo "ATTENTION: This script should be executed outside the tko-buildout repository directory."
+    echo "           You must move one directory up and run ./tko-buildout/setup.sh"
     exit
 fi
 
 if [ ! -e $LOCK_FILE ]; then
     echo "###############################################################################"
     echo "This script will do:"
-    echo " 1- Install system wide development libraries;"
-    echo " 2- Create symbolic links to buildout recipes *.cfg inside $REP_DIR;"
-    echo "    For future recipes in buildout diretory you must create those symlinks"
-    echo "    your self by doing: $> ln -s $REP_DIR/recipe.cfg"
-    echo " 3- Bootstrap the buildout with: python bootstrap.py"
-    echo " 4- Run the buildout with: bin/buildout"
-    echo " 5- Start odoo..."
+    echo " 1- Install system wide development packages in requirements.txt;"
+    echo " 2- Bootstrap the buildout with: python bootstrap.py"
+    echo " 3- Run the buildout with: bin/buildout"
     echo
     echo "On a day-by-day basis you change the recipe and buildout, with:"
     echo " - $> bin/buildout"
-    echo " - $> bin/start_odoo80"
+    echo " - $> bin/start_odoo"
     echo
     echo "ATTENTION: Make sure you have permissions to clone the repositories"
     echo "           the buildout will fail later on trying to clone them!!"
@@ -45,20 +61,18 @@ touch $LOCK_FILE
 
 # Ask user for the data into $BUILDOUT_FILE file
 if [ ! -e $BUILDOUT_FILE ]; then
-    buildout_file="$(cd $REP_DIR; ls -1d *.cfg | tr '\n' ' ')"
-    echo -n "Select base buildout file to extend from list [${buildout_file::-1}]: "
+    buildout_file="$(cd $REP_DIR; ls -1d odoo*.cfg | tr '\n' ' ')"
+    buildout_file=${buildout_file::-1}
+    buildout_file=${buildout_file%% odoo-base.cfg}
+    echo -n "Select base buildout file to extend from list or other (give complete path) [$buildout_file]: "
     read answer
     if [[ ! "$answer" == "" ]]; then
         buildout_file=$answer
     fi
-    
-    buildout_part=$(cat $REP_DIR/$buildout_file | grep parts | cut -d ' ' -f 3)
-    echo -n "Select a part to extend [$buildout_part]: "
-    read answer
-    if [[ ! "$answer" == "" ]]; then
-        buildout_part=$answer
-    fi
-    
+    buildout_version=${buildout_file##odoo}
+    buildout_version=${buildout_version%%-*}
+    buildout_version=${buildout_version%%.*}
+
     buildout_db_host="localhost"
     echo -n "Insert database host [$buildout_db_host]: "
     read answer
@@ -73,39 +87,59 @@ if [ ! -e $BUILDOUT_FILE ]; then
         buildout_db_port=$answer
     fi
     
-    echo -n "Insert database user [$buildout_part]: "
-    read buildout_db_user
-    if [[ "$buildout_db_user" == "" ]]; then
-        buildout_db_user="$buildout_part"
+    buildout_db_user="odoo$buildout_version"
+    echo -n "Insert database user [$buildout_db_user]: "
+    read answer
+    if [[ ! "$answer" == "" ]]; then
+        buildout_db_user=$answer
     fi
     
-    echo -n "Insert database password [$buildout_part]: "
-    read buildout_db_password
-    if [[ "$buildout_db_password" == "" ]]; then
-        buildout_db_password="$buildout_part"
+    buildout_db_password="odoo$buildout_version"
+    echo -n "Insert database password [$buildout_db_password]: "
+    read answer
+    if [[ ! "$answer" == "" ]]; then
+        buildout_db_password=$answer
     fi
     
-    echo -n "Insert Odoo admin password [admin]: "
-    read buildout_admin_passwd
-    if [[ "$buildout_admin_passwd" == "" ]]; then
-        buildout_admin_passwd="admin"
+    buildout_admin_password="admin"
+    echo -n "Insert Odoo admin password [$buildout_admin_password]: "
+    read answer
+    if [[ ! "$answer" == "" ]]; then
+        buildout_admin_password=$answer
     fi
     
-    echo "[buildout]
-extends = $buildout_file
+    echo "; Odoo Buildout file generated by TKO ThinkOpen Solutions ./tko-buildout/setup.sh
+; (C) ThinkOpen Solutions Brasil 2016-
+; Issues managed at https://github.com/thinkopensolutions/tko-buildout/issues
+[buildout]
+extends = $REP_DIR/${buildout_file}
 
-[$buildout_part]
+[odoo]
 ;############################################################################
-; Security-related options
+; XML-RPC / HTTP – XML-RPC Configuration
+options.longpolling_port = ${buildout_version}72
+; specify the TCP port for the XML-RPC protocol
+options.xmlrpc_port = ${buildout_version}73
+; specify the TCP port for the XML-RPC Secure protocol
+options.xmlrpcs_port = ${buildout_version}74
+; specify the TCP port for the NETRPC protocol
+options.netrpc_port = ${buildout_version}75
+;############################################################################
+; WEB Web interface Configuration
+; Filter listed database REGEXP
+options.dbfilter = .*
 ; disable the ability to return the list of databases
 options.list_db = True
-options.dbfilter = ^%d$
 ;############################################################################
 ; Multiprocessing options
+; Maximum allowed CPU time per request (default 60)
+; Set this as half of the limit_time_real
+options.limit_time_cpu = 240
+; Maximum allowed Real time per request (default 120)
+; Increase this at same time you increase nginx timeouts
+options.limit_time_real = 480
 ; Specify the number of workers, 0 disable prefork mode.
 options.workers = 2
-;############################################################################
-; Advanced options – Advanced options
 ; Maximum number of threads processing concurrently cron jobs (default 2)
 options.max_cron_threads = 1
 ;############################################################################
@@ -118,23 +152,13 @@ options.db_password = $buildout_db_password
 options.db_host = $buildout_db_host
 ; specify the database port
 options.db_port = $buildout_db_port
+; specify the database connection limit
+options.db_maxconn = 100
 ;############################################################################
 ; Server startup config - Common options
 ; Admin password for creating, restoring and backing up databases
-options.admin_passwd = $buildout_admin_passwd" > $BUILDOUT_FILE
+options.admin_passwd = $buildout_admin_password" > $BUILDOUT_FILE
 fi
-
-#echo "###############################################################################"
-#echo "## START BUILDING..."
-#echo "###############################################################################"
-# Keep this in setup for future reference
-# Don't run anymore so user can decide default language    
-#echo
-# Setting locale
-#sudo locale-gen pt_BR.UTF-8
-#sudo dpkg-reconfigure locales
-#sudo update-locale LANG=pt_BR.UTF-8 LANGUAGE
-#echo
 
 # Install Linux base packages
 if [[ -e $BUILDOUT_DIR/requirements.txt ]]; then
@@ -160,6 +184,14 @@ if [[ -e $BUILDOUT_DIR/requirements.txt ]]; then
         echo "# All requirements already installed..."
         echo "###############################################################################"
     fi
+fi
+
+if [[ $clean == true ]]; then
+    echo
+    echo "###############################################################################"
+    echo "# Removing all files and directories except buildout.cfg..."
+    echo "###############################################################################"
+    rm -rf addons anybox.recipe.odoo bin bootstrap.py develop-eggs downloads eggs etc parts src etherpad-lite.cfg .installed.cfg .mr.developer.cfg upgrade.*
 fi
 
 if [ ! -e /usr/bin/node ]; then
@@ -224,18 +256,12 @@ echo "##########################################################################
 echo "# Installing/Reinstalling bootstrap.py..."
 echo "###############################################################################"
 echo
-#url=http://downloads.buildout.org/1/bootstrap.py
-#url=https://raw.github.com/buildout/buildout/master/bootstrap/bootstrap.py
 url=http://downloads.buildout.org/2/bootstrap.py
-#url=https://bootstrap.pypa.io/bootstrap-buildout.py
 wget $url -O bootstrap.py
-for f in $(ls ./$REP_DIR/*.cfg); do
-    ln -sf $f
-done
 
 # Buildout and run
-python bootstrap.py --buildout-version 2.5.2 --setuptools-version 27.3.0 -c $BUILDOUT_FILE || exit
-#python bootstrap.py -c $BUILDOUT_FILE || exit
+#python bootstrap.py --buildout-version 2.5.2 --setuptools-version 27.3.0 -c $BUILDOUT_FILE || exit
+python bootstrap.py -c $BUILDOUT_FILE || exit
 
 echo "###############################################################################"
 echo "ATTENTION: On a day-by-day base you just run the bin/buildout script."
