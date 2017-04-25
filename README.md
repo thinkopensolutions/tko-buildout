@@ -1,18 +1,17 @@
 # ThinkOpen Solutions Buildout for Odoo
-Odoo Buildout configuration files
+Odoo Buildout configuration files, tested on Ubuntu 14.04.
 
-This recipes for Buildout are a fully featured tools allowing you to define and deploy quickly Odoo installations of any kinds, ranging from development setups to fully automated production deployments or continuous integration.
+This recipes are a fully featured tools allowing you to define and deploy quickly installations of Odoo.
 
 Some of its main features include:
- * installation of Odoo server, uniformly across versions.
- * retrieval of main software and addons from various sources, including the major version control systems
- * ability to pinpoint everything for replayability
- * management of Odoo configuration
- * dedicated scripts creation for easy integration of external tools, such as test launchers
- * packaging: creation of self-contained equivalents for easy deployment in tightly controlled hosting environmenents.
+ * Installation of Odoo server, uniformly across versions.
+ * Retrieval of main software and addons from various sources, including the major version control systems
+ * Ability to pinpoint everything for replayability
+ * Management of Odoo configuration
+ * Packaging: creation of self-contained equivalents for easy deployment in tightly controlled hosting environmenents.
 
 # POSTGRESQL Installation
- * If you intent to run Odoo in your localhost, you'll need to install Postgresql database server. It is important to use same version as the RDS production one. To install 9.5 on Ubuntu 14.04 run:
+ * If you intent to run Odoo in your localhost, you'll need to install Postgresql database server. To install 9.5 on Ubuntu 14.04 run:
 ```
 $~> sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
 $~> wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
@@ -23,7 +22,7 @@ $postgres> psql -c "CREATE USER odoo80 WITH PASSWORD 'odoo80' CREATEDB;"
 $postgres> psql template1 -c "CREATE EXTENSION unaccent;"
 
 ```
-# BUILDOUT Installation
+# BUILDOUT Odoo Installation
 Follow this steps to build an Odoo installation from scratch:
  * Clone this repository into a new directory, for example:
 ```
@@ -36,29 +35,24 @@ $odoo80> git clone git@github.com:thinkopensolutions/tko-buildout.git
 $odoo80> ./tko-buildout/setup.sh
 ```
  * Answer the following script questions (example for localhost):
-  * Select base buildout file to extend from list (odoo-80.cfg);
-  * Select a part to extend (odoo80);
+  * Select base buildout file to extend from list (odoo80.cfg);
   * Insert database host (localhost);
   * Insert database port (5432);
   * Insert database user (odoo80);
   * Insert database password (odoo80);
   * Insert Odoo admin password (admin)
- * The script will create buildout.cfg file for you, run bootstrap, buildout and at the end launch selected Odoo.
+ * The script will create buildout.cfg file for you, run bootstrap and buildout a complete Odoo. At the end simply run bin/start_odoo.
 
-# USAGE
- * Bootstrap with:
-```
-$odoo80> python bootstrap.py -c buildout.cfg # ATTENTION: Edit the buildout.cfg file before
-```
+# DAY TO DAY USAGE
  * Buildout with:
 ```
 $odoo80> bin/buildout
 ```
- * This is the day-to-day operation, rerun to apply any changes you do to buildout.cfg, and update repositories, and start Odoo with (ex: for odoo-80.cfg):
+ * This is the day-to-day operation, rerun to apply any changes you do to buildout.cfg, and update repositories, and start Odoo with:
 ```
-$odoo80> bin/start_odoo80
+$odoo80> bin/start_odoo
 ```
  * You can place Odoo paramenters here like -d -u and others, example:
 ```
-$odoo80> bin/start_odoo80 -d DATABASE -u MODULE --stop-after-init
+$odoo80> bin/start_odoo -d DATABASE -u MODULE --stop-after-init
 ```
