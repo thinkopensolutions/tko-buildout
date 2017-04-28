@@ -69,7 +69,15 @@ if [ ! -e $BUILDOUT_FILE ]; then
     if [[ ! "$answer" == "" ]]; then
         buildout_file=$answer
     fi
-    buildout_version=${buildout_file##odoo}
+
+    # Add rep dir if no dir is given
+    if [[ $buildout_file != */* ]]; then
+        buildout_file=$REP_DIR/$buildout_file
+    fi
+
+    # get version
+    buildout_version=${buildout_file##*/}
+    buildout_version=${buildout_version##odoo}
     buildout_version=${buildout_version%%-*}
     buildout_version=${buildout_version%%.*}
 
@@ -112,7 +120,7 @@ if [ ! -e $BUILDOUT_FILE ]; then
 ; (C) ThinkOpen Solutions Brasil 2016-
 ; Issues managed at https://github.com/thinkopensolutions/tko-buildout/issues
 [buildout]
-extends = $REP_DIR/${buildout_file}
+extends = ${buildout_file}
 
 [odoo]
 ;############################################################################
