@@ -19,7 +19,7 @@ usage() {
 OPTIONS
  -h This help, with examples
  -c Deletes all files and directories except buildout.cfg
-    After that it builds everything from zero
+    After that it builds everything from zero.
     WARNING: Will delete all non pushed changes made by user!"
 }
 
@@ -135,9 +135,9 @@ options.netrpc_port = ${buildout_version}75
 ;############################################################################
 ; WEB Web interface Configuration
 ; Filter listed database REGEXP
-options.dbfilter = .*
+options.dbfilter = ^%h$
 ; disable the ability to return the list of databases
-options.list_db = True
+options.list_db = False
 ;############################################################################
 ; Multiprocessing options
 ; Maximum allowed CPU time per request (default 60)
