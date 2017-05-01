@@ -64,11 +64,19 @@ if [ ! -e $BUILDOUT_FILE ]; then
     buildout_file="$(cd $REP_DIR; ls -1d odoo*.cfg | tr '\n' ' ')"
     buildout_file=${buildout_file::-1}
     buildout_file=${buildout_file%% odoo-base.cfg}
-    echo -n "Select base buildout file to extend from list or other (give complete path) [$buildout_file]: "
-    read answer
-    if [[ ! "$answer" == "" ]]; then
-        buildout_file=$answer
-    fi
+    ok=False
+    while [[ $ok == False ]]; do
+        echo -n "Select base buildout file to extend from list or other (give complete path) [$buildout_file]: "
+        read answer
+        if [[ -e "$answer" ]]; then
+            if [[ ! "$answer" == "" ]]; then
+                buildout_file=$answer
+            fi
+            ok=True
+        else
+            echo "Setup can't find that recipe."
+        fi
+    done
 
     # Add rep dir if no dir is given
     if [[ $buildout_file != */* ]]; then
