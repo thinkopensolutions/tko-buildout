@@ -3,6 +3,8 @@ git
 antiword
 curl
 fontconfig
+gfortran
+libatlas-base-dev
 libcups2-dev
 libevent-dev
 libffi-dev
