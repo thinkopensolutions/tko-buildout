@@ -22,12 +22,12 @@ libxml2
 libxml2-dev
 libxmlsec1-dev
 libxslt1-dev
-numpy
 p7zip-full
 poppler-utils
 python-all-dev
 python-dev
 python-libxml2
+python-numpy
 python-pip
 python-reportlab
 python-setuptools
