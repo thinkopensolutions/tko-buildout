@@ -30,6 +30,7 @@ python-libxml2
 python-numpy
 python-pip
 python-reportlab
+python-scipy
 python-setuptools
 python-software-properties
 python-tk
