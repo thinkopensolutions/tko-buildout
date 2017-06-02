@@ -233,11 +233,11 @@ if [ ! -e /usr/bin/wkhtmltopdf.sh ]; then
     echo "###############################################################################"
     . /etc/lsb-release
     if [ $(uname -i) == "x86_64" ]; then
-        wget http://download.gna.org/wkhtmltopdf/0.12/0.12.1/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb -O /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb
+        wget https://downloads.wkhtmltopdf.org/0.12/0.12.1/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb -O /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb
         sudo dpkg -i /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb
     else
-            wget http://download.gna.org/wkhtmltopdf/0.12/0.12.1/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb -O /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb
-            sudo dpkg -i /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb
+        wget https://downloads.wkhtmltopdf.org/0.12/0.12.1/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb -O /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb
+        sudo dpkg -i /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb
     fi
     echo 'xvfb-run --server-args="-screen 0, 1024x768x24" /usr/bin/wkhtmltopdf $*' > wkhtmltopdf.sh
     chmod 755 wkhtmltopdf.sh
