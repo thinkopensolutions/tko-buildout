@@ -213,13 +213,14 @@ fi
 if [ ! -e /usr/local/bin/pip ]; then
     echo
     echo "###############################################################################"
-    echo "# Installing PIP..."
+    echo "# Upgrading PIP..."
     echo "###############################################################################"
     sudo -H python -m pip install --upgrade --force-reinstall pip
+    . ~/.profile
 else
     echo
     echo "###############################################################################"
-    echo "# PIP installed..."
+    echo "# PIP Upgraded..."
     echo "###############################################################################"
 fi
 
