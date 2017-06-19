@@ -210,6 +210,19 @@ if [[ $clean == true ]]; then
     rm -rf addons anybox.recipe.odoo bin bootstrap.py develop-eggs downloads eggs etc parts src etherpad-lite.cfg .installed.cfg .mr.developer.cfg upgrade.*
 fi
 
+if [ ! -e /usr/local/bin/pip ]; then
+    echo
+    echo "###############################################################################"
+    echo "# Installing PIP..."
+    echo "###############################################################################"
+    sudo -H python -m pip install --upgrade --force-reinstall pip
+else
+    echo
+    echo "###############################################################################"
+    echo "# PIP installed..."
+    echo "###############################################################################"
+fi
+
 if [ ! -e /usr/bin/node ]; then
     echo
     echo "###############################################################################"
