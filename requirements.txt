@@ -28,6 +28,7 @@ python-all-dev
 python-dev
 python-libxml2
 python-numpy
+pyhton-pip
 python-reportlab
 python-scipy
 python-setuptools
