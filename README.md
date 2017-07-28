@@ -35,7 +35,7 @@ $odoo80> git clone git@github.com:thinkopensolutions/tko-buildout.git
 $odoo80> ./tko-buildout/setup.sh
 ```
  * Answer the following script questions (example for localhost):
-  * Select base buildout file to extend from list (odoo80.cfg);
+  * Select base buildout file to extend from list [it must be relative path of the file] (/home/username/odoo80/tko-buildout/odoo80.cfg);
   * Insert database host (localhost);
   * Insert database port (5432);
   * Insert database user (odoo80);
