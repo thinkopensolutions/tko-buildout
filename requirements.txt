@@ -1,4 +1,5 @@
 gcc
+g++
 libcups2-dev
 libffi-dev
 libgeoip-dev
