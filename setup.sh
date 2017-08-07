@@ -290,8 +290,8 @@ url=http://downloads.buildout.org/2/bootstrap.py
 wget $url -O bootstrap.py
 
 # Buildout and run
-#python bootstrap.py --buildout-version 2.5.2 --setuptools-version 27.3.0 -c $BUILDOUT_FILE || exit
-python bootstrap.py -c $BUILDOUT_FILE || exit
+python bootstrap.py --buildout-version 2.5.2 --setuptools-version 27.3.0 -c $BUILDOUT_FILE || exit
+#python bootstrap.py -c $BUILDOUT_FILE || exit
 
 echo "###############################################################################"
 echo "ATTENTION: On a day-by-day base you just run the bin/buildout script."
