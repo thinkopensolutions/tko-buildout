@@ -13,5 +13,6 @@ libxslt1-dev
 python
 python-all-dev
 python-dev
+python-pip
 unixodbc-dev
 

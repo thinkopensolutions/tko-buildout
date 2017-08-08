@@ -18,15 +18,17 @@ usage() {
     echo "Usage ./tko-buildout/setup.sh [-h] [-c]
 OPTIONS
  -h This help, with examples
+ -p Packages to be installed through apt-get
  -c Deletes all files and directories except buildout.cfg
     After that it builds everything from zero.
     WARNING: Will delete all non pushed changes made by user!"
 }
 
-while getopts "hc" arg; do
+while getopts "hcp:" arg; do
     case "$arg" in
         h) usage; exit;;
         c) clean=true;;
+        p) packages="$OPTARG";;
         -) break ;;
         \?) ;;
         *) echo "unhandled option $arg";;
@@ -180,7 +182,7 @@ fi
 if [[ -e $BUILDOUT_DIR/requirements.txt ]]; then
     requirements=$(cat $BUILDOUT_DIR/requirements.txt | grep -v "#")
     to_install=""
-    for pkg in $requirements; do
+    for pkg in $requirements $packages; do
         if [[ $(dpkg -s $pkg | grep "Status: install ok installed" | wc -l) -lt 1 ]]; then
             to_install="$to_install $pkg"
         fi
@@ -188,16 +190,17 @@ if [[ -e $BUILDOUT_DIR/requirements.txt ]]; then
     if [[ $to_install != "" ]]; then
         echo
         echo "###############################################################################"
-        echo "# Installing system dev libraries..."
+        echo "# Installing system dev packages..."
         echo "###############################################################################"
         echo "# Updating..."
         sudo apt-get update
         echo "# Installing $to_install packages..."
         sudo apt-get install $to_install
+        sudo apt-get autoremove
     else
         echo
         echo "###############################################################################"
-        echo "# All requirements already installed..."
+        echo "# All system dev packages already installed..."
         echo "###############################################################################"
     fi
 fi
@@ -285,16 +288,8 @@ echo
 echo "###############################################################################"
 echo "# Installing/Reinstalling bootstrap.py..."
 echo "###############################################################################"
-echo
 url=http://downloads.buildout.org/2/bootstrap.py
 wget $url -O bootstrap.py
-
-# Buildout and run
 python bootstrap.py --buildout-version 2.5.2 --setuptools-version 27.3.0 -c $BUILDOUT_FILE || exit
 #python bootstrap.py -c $BUILDOUT_FILE || exit
 
-echo "###############################################################################"
-echo "ATTENTION: On a day-by-day base you just run the bin/buildout script."
-echo "bin/buildout"
-
-bin/buildout -c $BUILDOUT_FILE
