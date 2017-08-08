@@ -293,3 +293,13 @@ wget $url -O bootstrap.py
 python bootstrap.py --buildout-version 2.5.2 --setuptools-version 27.3.0 -c $BUILDOUT_FILE || exit
 #python bootstrap.py -c $BUILDOUT_FILE || exit
 
+ps=$(ps -o stat= -p $PPID)
+if [[ ${ps:1:1} == "s" ]]; then
+    # It only runs if it was called directly by the user
+    echo
+    echo "###############################################################################"
+    echo "ATTENTION: On a day-by-day base you just run the bin/buildout script."
+    echo "bin/buildout"
+    bin/buildout
+fi
+
