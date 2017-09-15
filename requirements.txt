@@ -10,6 +10,7 @@ libtiff5-dev
 libssl-dev
 libxml2-dev
 libxslt1-dev
+node-less
 python
 python-all-dev
 python-dev
