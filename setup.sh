@@ -235,11 +235,36 @@ if [ ! -e /usr/bin/node ]; then
     curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -
     sudo apt-get -y install nodejs
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
-    sudo npm install -f -g less less-plugin-clean-css
 else
     echo
     echo "###############################################################################"
     echo "# Node.js installed..."
+    echo "###############################################################################"
+fi
+
+if [ ! -e /usr/bin/npm ]; then
+    echo
+    echo "###############################################################################"
+    echo "# Installing NPM..."
+    echo "###############################################################################"
+    sudo pip install npm
+else
+    echo
+    echo "###############################################################################"
+    echo "# NPM installed..."
+    echo "###############################################################################"
+fi
+
+if [ ! -e /usr/bin/lessc ]; then
+    echo
+    echo "###############################################################################"
+    echo "# Installing lessc..."
+    echo "###############################################################################"
+    sudo npm install -f -g less less-plugin-clean-css
+else
+    echo
+    echo "###############################################################################"
+    echo "# Lessc installed..."
     echo "###############################################################################"
 fi
 
