@@ -13,12 +13,12 @@ BUILDOUT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILDOUT_FILE="buildout.cfg"
 LOCK_FILE=${BUILDOUT_DIR%/*}/.tkobr_setup_lock
 clean=false
+packages=false
 
 usage() {
     echo "Usage ./tko-buildout/setup.sh [-h] [-c]
 OPTIONS
  -h This help, with examples
- -p Packages to be installed through apt-get
  -c Deletes all files and directories except buildout.cfg
     After that it builds everything from zero.
     WARNING: Will delete all non pushed changes made by user!"
@@ -29,11 +29,11 @@ while getopts "hcp:" arg; do
         h) usage; exit;;
         c) clean=true;;
         p) packages="$OPTARG";;
-        -) break ;;
+        -) break;;
         \?) ;;
         *) echo "unhandled option $arg";;
         ?) usage
-         exit 1 ;;
+         exit 1;;
     esac
 done
 
@@ -179,31 +179,41 @@ options.admin_passwd = $buildout_admin_password" > $BUILDOUT_FILE
 fi
 
 # Install Linux base packages
-if [[ -e $BUILDOUT_DIR/requirements.txt ]]; then
-    requirements=$(cat $BUILDOUT_DIR/requirements.txt | grep -v "#")
-    to_install=""
-    for pkg in $requirements $packages; do
-        if [[ $(dpkg -s $pkg | grep "Status: install ok installed" | wc -l) -lt 1 ]]; then
+to_install=""
+installed_msg="Installed: (none)"
+if [[ $packages != false ]]; then
+    for pkg in $packages; do
+        if [[ $(apt-cache policy $pkg | grep "$installed_msg" | wc -l) -gt 0 ]]; then
             to_install="$to_install $pkg"
         fi
     done
-    if [[ $to_install != "" ]]; then
-        echo
-        echo "###############################################################################"
-        echo "# Installing system dev packages..."
-        echo "###############################################################################"
-        echo "# Updating..."
-        sudo apt-get update
-        echo "# Installing $to_install packages..."
-        sudo apt-get install $to_install
-        sudo apt-get autoremove
-    else
-        echo
-        echo "###############################################################################"
-        echo "# All system dev packages already installed..."
-        echo "###############################################################################"
-    fi
 fi
+if [[ -e $BUILDOUT_DIR/requirements.txt ]]; then
+    requirements=$(cat $BUILDOUT_DIR/requirements.txt | grep -v "#")
+    for pkg in $requirements; do
+        if [[ $(apt-cache policy $pkg | grep "$installed_msg" | wc -l) -gt 0 ]]; then
+            to_install="$to_install $pkg"
+        fi
+    done
+fi
+if [[ $to_install != "" ]]; then
+    echo
+    echo "###############################################################################"
+    echo "# Installing system dev packages..."
+    echo "###############################################################################"
+    echo "# Updating..."
+    sudo apt-get update
+    echo "# Installing $to_install packages..."
+    sudo apt-get install $to_install
+    sudo apt-get autoremove
+else
+    echo
+    echo "###############################################################################"
+    echo "# All system dev packages already installed..."
+    echo "###############################################################################"
+fi
+
+exit
 
 if [[ $clean == true ]]; then
     echo
