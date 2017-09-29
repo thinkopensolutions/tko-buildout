@@ -213,8 +213,6 @@ else
     echo "###############################################################################"
 fi
 
-exit
-
 if [[ $clean == true ]]; then
     echo
     echo "###############################################################################"
@@ -237,19 +235,32 @@ else
     echo "###############################################################################"
 fi
 
-if [ ! -e /usr/bin/node ]; then
+install_nodejs() {
+    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    sudo ln -sf /usr/bin/nodejs /usr/bin/node
+}
+
+if [[ $(apt-cache policy nodejs | grep "Installed: (none)" | wc -l) -eq 0 ]]; then
+    node_version=$(nodejs -v)
+    if [[ ${node_version:0:2} != "v8" ]]; then
+        echo
+        echo "###############################################################################"
+        echo "# Upgrading Node.js..."
+        echo "###############################################################################"
+        install_nodejs
+    else
+        echo
+        echo "###############################################################################"
+        echo "# Node.js installed..."
+        echo "###############################################################################"
+    fi
+else
     echo
     echo "###############################################################################"
     echo "# Installing Node.js..."
     echo "###############################################################################"
-    curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -
-    sudo apt-get -y install nodejs
-    sudo ln -sf /usr/bin/nodejs /usr/bin/node
-else
-    echo
-    echo "###############################################################################"
-    echo "# Node.js installed..."
-    echo "###############################################################################"
+    install_nodejs
 fi
 
 if [ ! -e /usr/bin/npm ]; then
