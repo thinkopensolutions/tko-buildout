@@ -180,7 +180,7 @@ fi
 
 # Install Linux base packages
 to_install=""
-installed_msg="Installed: (none)"
+installed_msg="Installed: (none)\|Instalado: (nenhum)"
 if [[ $packages != false ]]; then
     for pkg in $packages; do
         if [[ $(apt-cache policy $pkg | grep "$installed_msg" | wc -l) -gt 0 ]]; then
@@ -203,6 +203,7 @@ if [[ $to_install != "" ]]; then
     echo "###############################################################################"
     echo "# Updating..."
     sudo apt-get update
+    sudo apt-get -f install
     echo "# Installing $to_install packages..."
     sudo apt-get install $to_install
     sudo apt-get autoremove
