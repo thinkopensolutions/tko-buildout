@@ -242,7 +242,7 @@ install_nodejs() {
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
 }
 
-if [[ $(apt-cache policy nodejs | grep $installed_msg | wc -l) -eq 0 ]]; then
+if [[ $(apt-cache policy nodejs | grep "$installed_msg" | wc -l) -eq 0 ]]; then
     node_version=$(nodejs -v)
     if [[ ${node_version:0:2} != "v8" ]]; then
         echo
