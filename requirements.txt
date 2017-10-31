@@ -1,8 +1,10 @@
+fontconfig
 gcc
 g++
 libcups2-dev
 libffi-dev
 libgeoip-dev
+libjpeg-turbo8
 libldap2-dev
 libpq-dev
 libsasl2-dev
@@ -16,4 +18,3 @@ python-all-dev
 python-dev
 python-pip
 unixodbc-dev
-
