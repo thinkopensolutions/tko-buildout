@@ -242,7 +242,7 @@ install_nodejs() {
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
 }
 
-if [[ $(apt-cache policy nodejs | grep "Installed: (none)" | wc -l) -eq 0 ]]; then
+if [[ $(apt-cache policy nodejs | grep $installed_msg | wc -l) -eq 0 ]]; then
     node_version=$(nodejs -v)
     if [[ ${node_version:0:2} != "v8" ]]; then
         echo
@@ -269,7 +269,7 @@ if [ ! -e /usr/bin/npm ]; then
     echo "###############################################################################"
     echo "# Installing NPM..."
     echo "###############################################################################"
-    sudo pip2 install npm
+    sudo -H pip2 install npm
 else
     echo
     echo "###############################################################################"
@@ -282,7 +282,7 @@ if [ ! -e /usr/bin/lessc ]; then
     echo "###############################################################################"
     echo "# Installing lessc..."
     echo "###############################################################################"
-    sudo npm install -f -g less less-plugin-clean-css
+    sudo -H npm install -f -g less less-plugin-clean-css
 else
     echo
     echo "###############################################################################"
@@ -298,10 +298,10 @@ if [ ! -e /usr/bin/wkhtmltopdf.sh ]; then
     . /etc/lsb-release
     if [ $(uname -i) == "x86_64" ]; then
         wget https://downloads.wkhtmltopdf.org/0.12/0.12.1/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb -O /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb
-        sudo dpkg -i /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb
+        sudo -H dpkg -i /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-amd64.deb
     else
         wget https://downloads.wkhtmltopdf.org/0.12/0.12.1/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb -O /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb
-        sudo dpkg -i /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb
+        sudo -H dpkg -i /tmp/wkhtmltox-0.12.1_linux-$DISTRIB_CODENAME-i386.deb
     fi
     echo 'xvfb-run --server-args="-screen 0, 1024x768x24" /usr/bin/wkhtmltopdf $*' > wkhtmltopdf.sh
     chmod 755 wkhtmltopdf.sh
